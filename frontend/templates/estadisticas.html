@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Estadísticas - Eco-RVM{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="display-6 mb-4">
+        <i class="bi bi-bar-chart-fill me-2"></i>Estadísticas del Sistema
+    </h1>
+
+    <!-- Tarjetas de Estadísticas Generales -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon blue">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="stats-value animate-number" data-value="{{ stats.total_usuarios }}">{{
+                            stats.total_usuarios }}</p>
+                        <p class="stats-label">Usuarios Registrados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon green">
+                        <i class="bi bi-recycle"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="stats-value animate-number" data-value="{{ stats.total_transacciones }}">{{
+                            stats.total_transacciones }}</p>
+                        <p class="stats-label">Reciclajes Totales</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon orange">
+                        <i class="bi bi-coin"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="stats-value animate-number" data-value="{{ stats.total_puntos_sistema }}">{{
+                            stats.total_puntos_sistema }}</p>
+                        <p class="stats-label">Puntos Distribuidos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon purple">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="stats-value">{{ stats.promedio_puntos_usuario|round(1) }}</p>
+                        <p class="stats-label">Promedio por Usuario</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impacto Ambiental -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="impact-card h-100">
+                <h5 class="mb-4">
+                    <i class="bi bi-globe-americas me-2"></i>Impacto Ambiental Total
+                </h5>
+
+                <div class="row text-center mb-4">
+                    <div class="col-4">
+                        <div class="impact-value">{{ impacto.co2_evitado_kg|round(2) }}</div>
+                        <div class="impact-label">kg CO₂ evitado</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="impact-value">{{ impacto.peso_reciclado_kg|round(2) }}</div>
+                        <div class="impact-label">kg reciclado</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="impact-value">{{ impacto.total_reciclajes }}</div>
+                        <div class="impact-label">objetos</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="impact-equivalence text-center">
+                            <i class="bi bi-tree-fill fs-3"></i>
+                            <div class="mt-2"><strong>{{ impacto.equivalencias.arboles_plantados }}</strong></div>
+                            <small>Árboles plantados</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="impact-equivalence text-center">
+                            <i class="bi bi-droplet-fill fs-3"></i>
+                            <div class="mt-2"><strong>{{ impacto.equivalencias.litros_agua_ahorrados|int }}</strong>
+                            </div>
+                            <small>Litros de agua</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="impact-equivalence text-center">
+                            <i class="bi bi-lightning-fill fs-3"></i>
+                            <div class="mt-2"><strong>{{ impacto.equivalencias.kwh_energia_ahorrada }}</strong></div>
+                            <small>kWh energía</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Reciclajes por Día</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chart-reciclajes"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transacciones Recientes -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-clock-history me-2"></i>Transacciones Recientes
+            </h5>
+            <span class="badge bg-secondary">Últimas {{ transacciones|length }}</span>
+        </div>
+        <div class="card-body p-0">
+            {% if transacciones %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Resultado IA</th>
+                            <th>Confianza</th>
+                            <th class="text-end">Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transacciones %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-light text-dark">#{{ t.id }}</span>
+                            </td>
+                            <td>
+                                <a href="/usuario/{{ t.usuario_id }}" class="text-decoration-none">
+                                    Usuario #{{ t.usuario_id }}
+                                </a>
+                            </td>
+                            <td>
+                                <small>{{ t.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ t.tipo_objeto|capitalize }}</span>
+                            </td>
+                            <td>{{ t.resultado_ia or '-' }}</td>
+                            <td>
+                                {% if t.confianza_ia %}
+                                <div class="d-flex align-items-center">
+                                    <div class="progress me-2" style="height: 8px; width: 60px;">
+                                        <div class="progress-bar bg-success"
+                                            style="width: {{ (t.confianza_ia * 100)|int }}%"></div>
+                                    </div>
+                                    <small>{{ (t.confianza_ia * 100)|round(1) }}%</small>
+                                </div>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <span class="text-success fw-bold">+{{ t.puntos_otorgados }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h5>Sin transacciones</h5>
+                <p>Aún no hay registros de reciclaje en el sistema.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Datos de reciclajes por día
+    const reciclajesData = {{ reciclajes_semana | tojson | safe }};
+
+    // Crear gráfica
+    document.addEventListener('DOMContentLoaded', function () {
+        if (reciclajesData && Object.keys(reciclajesData).length > 0) {
+            EcoRVM.createRecyclingChart('chart-reciclajes', reciclajesData);
+        }
+    });
+</script>
+{% endblock %}

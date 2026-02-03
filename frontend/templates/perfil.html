@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil - Eco-RVM{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header del Perfil -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center"
+                                style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-fill display-4"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h2 class="mb-1">{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+                            <p class="mb-0 opacity-75">
+                                <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
+                            </p>
+                            <p class="mb-0 mt-2">
+                                <span class="badge bg-warning text-dark">
+                                    Nivel {{ usuario.nivel }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-auto text-center">
+                            <h1 class="display-4 mb-0">{{ usuario.puntos_totales }}</h1>
+                            <p class="mb-0">
+                                <i class="bi bi-coin me-1"></i>Puntos
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerta de Vinculación de Tarjeta RFID -->
+    {% if not usuario.tarjeta_vinculada %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-credit-card-2-front display-6 me-3 text-warning"></i>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-2">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Vincula tu Tarjeta para Usar las Máquinas
+                        </h5>
+                        <p class="mb-2">
+                            Para reciclar en las máquinas <strong>Eco-RVM</strong>, necesitas vincular una tarjeta RFID
+                            física a tu cuenta.
+                        </p>
+
+                        <div class="card bg-light border-0 mb-3">
+                            <div class="card-body py-2">
+                                <strong>Tu Código de Vinculación:</strong>
+                                <span class="badge bg-primary fs-5 ms-2">{{ usuario.codigo_virtual }}</span>
+                                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copiarCodigo()">
+                                    <i class="bi bi-clipboard"></i> Copiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <p class="mb-1"><strong>Instrucciones para vincular en la máquina:</strong></p>
+                        <ol class="mb-2 small">
+                            <li>Acércate a cualquier máquina <strong>Eco-RVM</strong></li>
+                            <li>Acerca tu tarjeta RFID nueva al lector</li>
+                            <li>La máquina detectará que es una tarjeta nueva</li>
+                            <li>En el LCD verás: <code>"Ingresa codigo:"</code></li>
+                            <li>Usa el <strong>teclado numérico</strong> para ingresar tu código</li>
+                            <li>Presiona <kbd>#</kbd> para confirmar</li>
+                            <li>¡Listo! Tu tarjeta quedará vinculada</li>
+                        </ol>
+
+                        <div class="alert alert-info py-2 mb-0 small">
+                            <i class="bi bi-keyboard me-1"></i>
+                            <strong>Tu código solo usa teclas del teclado:</strong> 0-9 y A-D
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Tarjeta vinculada exitosamente -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong>Tarjeta RFID Vinculada</strong> - Puedes usar las máquinas Eco-RVM con tu tarjeta.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Columna Izquierda: Stats y Racha -->
+        <div class="col-lg-4 mb-4">
+            <!-- Racha -->
+            <div class="card mb-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-fire me-2"></i>Racha de Reciclaje
+                </div>
+                <div class="card-body text-center">
+                    <h1 class="display-3 text-warning mb-0">{{ usuario.racha_dias }}</h1>
+                    <p class="text-muted">días consecutivos</p>
+                    {% if usuario.racha_dias >= 7 %}
+                    <span class="badge bg-success">¡Una semana! 🎉</span>
+                    {% elif usuario.racha_dias >= 3 %}
+                    <span class="badge bg-info">¡Sigue así! 💪</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Impacto Ambiental Personal -->
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-tree me-2"></i>Mi Impacto Ambiental
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <h4 class="text-success mb-0">{{ "%.2f"|format(impacto.kg_reciclado) }}</h4>
+                            <small class="text-muted">kg reciclados</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h4 class="text-primary mb-0">{{ "%.2f"|format(impacto.co2_evitado) }}</h4>
+                            <small class="text-muted">kg CO₂ evitado</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-info mb-0">{{ impacto.botellas_plastico }}</h4>
+                            <small class="text-muted">botellas</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-secondary mb-0">{{ impacto.latas_metal }}</h4>
+                            <small class="text-muted">latas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Badges y Transacciones -->
+        <div class="col-lg-8">
+            <!-- Badges Obtenidos -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <i class="bi bi-award me-2"></i>Mis Insignias ({{ badges|length }})
+                </div>
+                <div class="card-body">
+                    {% if badges %}
+                    <div class="row">
+                        {% for badge in badges %}
+                        <div class="col-6 col-md-4 col-lg-3 mb-3">
+                            <div class="card h-100 text-center border-warning">
+                                <div class="card-body py-3">
+                                    <span class="display-4">{{ badge.icono }}</span>
+                                    <h6 class="mt-2 mb-0">{{ badge.nombre }}</h6>
+                                    <small class="text-muted">{{ badge.descripcion }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-award display-4"></i>
+                        <p class="mt-2">Aún no tienes insignias. ¡Sigue reciclando para ganarlas!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Historial de Transacciones -->
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="bi bi-clock-history me-2"></i>Mis Reciclajes Recientes
+                    </span>
+                    <span class="badge bg-primary">{{ usuario.transacciones.count() }} total</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if transacciones %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Objeto</th>
+                                    <th>Clasificación IA</th>
+                                    <th class="text-end">Puntos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in transacciones %}
+                                <tr>
+                                    <td>
+                                        <small>{{ t.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        {% if t.tipo_objeto == 'botella_plastico' %}
+                                        <i class="bi bi-droplet text-info"></i>
+                                        {% else %}
+                                        <i class="bi bi-cup-straw text-secondary"></i>
+                                        {% endif %}
+                                        {{ t.tipo_objeto|replace('_', ' ')|title }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ t.resultado_ia }}</span>
+                                        {% if t.confianza_ia %}
+                                        <small class="text-muted">({{ (t.confianza_ia * 100)|round(1) }}%)</small>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge bg-warning text-dark">
+                                            +{{ t.puntos_otorgados }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-recycle display-4"></i>
+                        <p class="mt-2">Aún no has reciclado nada. ¡Visita una máquina Eco-RVM!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copiarCodigo() {
+        const codigo = '{{ usuario.codigo_virtual }}';
+        navigator.clipboard.writeText(codigo).then(function () {
+            // Mostrar confirmación
+            if (typeof EcoRVM !== 'undefined' && EcoRVM.showToast) {
+                EcoRVM.showToast('Código copiado: ' + codigo, 'success');
+            } else {
+                alert('Código copiado: ' + codigo);
+            }
+        }).catch(function (err) {
+            console.error('Error al copiar:', err);
+            alert('Código: ' + codigo);
+        });
+    }
+</script>
+{% endblock %}

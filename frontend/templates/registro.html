@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Cuenta - Eco-RVM{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <i class="bi bi-person-plus display-4"></i>
+                    <h3 class="mt-2 mb-0">Únete a Eco-RVM</h3>
+                    <p class="mb-0 opacity-75">Crea tu cuenta y empieza a reciclar</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('registro') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Nombre
+                                </label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required
+                                    placeholder="Tu nombre">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="apellido" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Apellido
+                                </label>
+                                <input type="text" class="form-control" id="apellido" name="apellido" required
+                                    placeholder="Tu apellido">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope me-1"></i>Correo Electrónico
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" required
+                                placeholder="tu@correo.com">
+                            <div class="form-text">Este será tu usuario para iniciar sesión</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-lock me-1"></i>Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" required
+                                minlength="6" placeholder="Mínimo 6 caracteres">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password_confirm" class="form-label">
+                                <i class="bi bi-lock-fill me-1"></i>Confirmar Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="password_confirm" name="password_confirm"
+                                required placeholder="Repite tu contraseña">
+                        </div>
+
+                        <!-- Info sobre código virtual -->
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <strong>¿Cómo funciona?</strong>
+                            <p class="mb-0 small mt-1">
+                                Al registrarte, recibirás un <strong>código virtual único</strong>
+                                (ejemplo: ECO-XXXX) que funcionará como tu identificador
+                                en las máquinas de reciclaje.
+                            </p>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="bi bi-check-circle me-2"></i>Crear Mi Cuenta
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="mb-2">¿Ya tienes cuenta?</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beneficios -->
+            <div class="row mt-4">
+                <div class="col-4">
+                    <div class="card border-0 text-center py-3">
+                        <i class="bi bi-coin text-warning display-6"></i>
+                        <p class="small mt-2 mb-0">Gana puntos reciclando</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 text-center py-3">
+                        <i class="bi bi-gift text-danger display-6"></i>
+                        <p class="small mt-2 mb-0">Canjea recompensas</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 text-center py-3">
+                        <i class="bi bi-tree text-success display-6"></i>
+                        <p class="small mt-2 mb-0">Cuida el planeta</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

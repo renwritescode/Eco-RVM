@@ -1,0 +1,55 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+venv_311/
+.venv/
+env/
+
+# Environment variables
+.env
+
+# Database
+*.db
+data/*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Model checkpoints (keep final models)
+modelo_checkpoint_*.h5
+
+# Captures directory content (keep folder)
+capturas/*
+!capturas/.gitkeep
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker
+.docker/
+
+# Temporary files
+*.tmp
+*.temp

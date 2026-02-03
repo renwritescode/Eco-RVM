@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Eco-RVM{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Título y bienvenida -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 mb-2">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard Principal
+            </h1>
+            <p class="text-muted">
+                Hola, <strong>{{ current_user.nombre }}</strong>! Aquí puedes ver el ranking general de recicladores.
+            </p>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas Generales -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon blue">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="stats-value">{{ usuarios|length }}</p>
+                        <p class="stats-label">Usuarios Activos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon green">
+                        <i class="bi bi-coin"></i>
+                    </div>
+                    <div class="ms-3">
+                        {% set total_puntos = usuarios|map(attribute='puntos_totales')|sum %}
+                        <p class="stats-value">{{ total_puntos }}</p>
+                        <p class="stats-label">Puntos Totales</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon orange">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div class="ms-3">
+                        {% set promedio = (total_puntos / usuarios|length)|round(1) if usuarios|length > 0 else 0 %}
+                        <p class="stats-value">{{ promedio }}</p>
+                        <p class="stats-label">Promedio/Usuario</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon purple">
+                        <i class="bi bi-recycle"></i>
+                    </div>
+                    <div class="ms-3">
+                        <p class="stats-value" id="total-reciclajes">--</p>
+                        <p class="stats-label">Reciclajes Totales</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Ranking (Solo visualización, sin acciones) -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-trophy-fill text-warning me-2"></i>Ranking de Recicladores
+            </h5>
+            <span class="badge bg-primary">Top {{ usuarios|length }}</span>
+        </div>
+        <div class="card-body p-0">
+            {% if usuarios %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Pos</th>
+                            <th>Usuario</th>
+                            <th>Nivel</th>
+                            <th>Racha</th>
+                            <th class="text-end">Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr class="{% if usuario.id == current_user.id %}table-primary{% endif %}">
+                            <td>
+                                {% if loop.index == 1 %}
+                                <span class="badge-rank gold">🥇</span>
+                                {% elif loop.index == 2 %}
+                                <span class="badge-rank silver">🥈</span>
+                                {% elif loop.index == 3 %}
+                                <span class="badge-rank bronze">🥉</span>
+                                {% else %}
+                                <span class="badge-rank default">{{ loop.index }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px; font-weight: 600;">
+                                        {{ usuario.nombre[0] }}{{ usuario.apellido[0] }}
+                                    </div>
+                                    <div class="ms-3">
+                                        <strong>
+                                            {{ usuario.nombre }} {{ usuario.apellido }}
+                                            {% if usuario.id == current_user.id %}
+                                            <span class="badge bg-success ms-1">Tú</span>
+                                            {% endif %}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">Nivel {{ usuario.nivel }}</span>
+                            </td>
+                            <td>
+                                {% if usuario.racha_dias > 0 %}
+                                <span class="streak-badge">
+                                    <i class="bi bi-fire"></i>
+                                    {{ usuario.racha_dias }} días
+                                </span>
+                                {% else %}
+                                <span class="text-muted">Sin racha</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <span class="points-badge">{{ usuario.puntos_totales }} pts</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h5>No hay usuarios registrados</h5>
+                <p>Los usuarios aparecerán aquí cuando se registren.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Cargar estadísticas adicionales vía API
+    document.addEventListener('DOMContentLoaded', async function () {
+        try {
+            const response = await fetch('/api/stats/dashboard');
+            const data = await response.json();
+
+            if (data.estadisticas) {
+                document.getElementById('total-reciclajes').textContent =
+                    data.estadisticas.total_transacciones || 0;
+            }
+        } catch (error) {
+            console.error('Error cargando stats:', error);
+            document.getElementById('total-reciclajes').textContent = '0';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ usuario.nombre }} {{ usuario.apellido }} - Eco-RVM{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="breadcrumb-item active">{{ usuario.nombre }} {{ usuario.apellido }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Perfil del Usuario -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center pt-4">
+                    <!-- Avatar -->
+                    <div class="avatar bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px; font-size: 2rem; font-weight: 600;">
+                        {{ usuario.nombre[0] }}{{ usuario.apellido[0] }}
+                    </div>
+
+                    <h4>{{ usuario.nombre }} {{ usuario.apellido }}</h4>
+                    <p class="text-muted mb-2">{{ usuario.email }}</p>
+                    <code class="uid-code">{{ usuario.uid_rfid }}</code>
+
+                    <!-- Nivel y Progreso -->
+                    <div class="mt-4 mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span><i class="bi bi-star-fill text-warning"></i> Nivel {{ usuario.nivel }}</span>
+                            <span class="text-muted">{{ usuario.puntos_totales % 100 }}/100 pts</span>
+                        </div>
+                        <div class="level-progress">
+                            <div class="progress-bar" style="width: {{ usuario.puntos_totales % 100 }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ 100 - (usuario.puntos_totales % 100) }} pts para el siguiente
+                            nivel</small>
+                    </div>
+
+                    <!-- Puntos Totales -->
+                    <div class="bg-success text-white rounded-3 p-3 mb-3">
+                        <h2 class="mb-0">{{ usuario.puntos_totales }}</h2>
+                        <small>Puntos Totales</small>
+                    </div>
+
+                    <!-- Racha -->
+                    {% if usuario.racha_dias > 0 %}
+                    <div class="streak-badge mb-3">
+                        <i class="bi bi-fire"></i>
+                        Racha de {{ usuario.racha_dias }} días
+                    </div>
+                    {% endif %}
+
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        Miembro desde {{ usuario.fecha_registro.strftime('%d/%m/%Y') }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Impacto Ambiental Personal -->
+            {% if impacto %}
+            <div class="impact-card mt-4">
+                <h5 class="mb-3"><i class="bi bi-globe-americas me-2"></i>Tu Impacto Ambiental</h5>
+
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="impact-value">{{ impacto.co2_evitado_kg }}</div>
+                        <div class="impact-label">kg CO₂ evitado</div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="impact-value">{{ impacto.peso_reciclado_kg }}</div>
+                        <div class="impact-label">kg reciclado</div>
+                    </div>
+                </div>
+
+                <div class="impact-equivalence">
+                    <i class="bi bi-tree-fill me-2"></i>
+                    Equivalente a {{ (impacto.co2_evitado_kg / 22)|round(1) }} árboles plantados
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Badges -->
+            {% if badges %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-award-fill me-2"></i>Logros Obtenidos</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for ub in badges %}
+                        <span class="user-badge"
+                            style="background-color: {{ ub.badge.color }}20; border: 2px solid {{ ub.badge.color }};">
+                            <span class="badge-icon">{{ ub.badge.icono }}</span>
+                            <span>{{ ub.badge.nombre }}</span>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Historial de Transacciones -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Historial de Reciclajes
+                    </h5>
+                    <span class="badge bg-secondary">{{ transacciones|length }} registros</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if transacciones %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo Objeto</th>
+                                    <th>Resultado IA</th>
+                                    <th>Confianza</th>
+                                    <th class="text-end">Puntos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in transacciones %}
+                                <tr>
+                                    <td>
+                                        <small>
+                                            {{ t.fecha_hora.strftime('%d/%m/%Y') }}
+                                            <br>
+                                            <span class="text-muted">{{ t.fecha_hora.strftime('%H:%M') }}</span>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ t.tipo_objeto|capitalize }}</span>
+                                    </td>
+                                    <td>{{ t.resultado_ia or '-' }}</td>
+                                    <td>
+                                        {% if t.confianza_ia %}
+                                        <div class="progress" style="height: 8px; width: 60px;">
+                                            <div class="progress-bar bg-success"
+                                                style="width: {{ (t.confianza_ia * 100)|int }}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{ (t.confianza_ia * 100)|round(1) }}%</small>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="text-success fw-bold">+{{ t.puntos_otorgados }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <h5>Sin historial</h5>
+                        <p>Aún no hay registros de reciclaje para este usuario.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

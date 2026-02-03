@@ -1,0 +1,54 @@
+# Docker Compose para Eco-RVM
+# Orquestación de servicios del sistema
+
+version: '3.8'
+
+services:
+  # Backend Flask
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eco-rvm-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./ml/models:/app/ml/models:ro
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-my-super-secret-key-change-me}
+      - DATABASE_URL=sqlite:///data/eco_rvm.db
+    restart: unless-stopped
+    networks:
+      - eco-rvm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # (Opcional) Base de datos PostgreSQL para producción
+  # Descomentar para usar PostgreSQL en lugar de SQLite
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: eco-rvm-db
+  #   environment:
+  #     - POSTGRES_USER=ecorvm
+  #     - POSTGRES_PASSWORD=ecorvm_password
+  #     - POSTGRES_DB=ecorvm
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - eco-rvm-network
+
+networks:
+  eco-rvm-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Recompensas - Eco-RVM{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header con puntos del usuario -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="display-6 mb-0">
+                            <i class="bi bi-gift-fill me-2"></i>Catálogo de Recompensas
+                        </h1>
+                        <p class="mb-0 opacity-75">
+                            Canjea tus puntos por increíbles recompensas
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="mb-0">
+                            <i class="bi bi-coin me-2"></i>{{ puntos_usuario }}
+                        </h2>
+                        <small>Tus puntos disponibles</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if recompensas %}
+    <div class="row g-4">
+        {% for r in recompensas %}
+        <div class="col-md-6 col-lg-4">
+            <div
+                class="card reward-card h-100 {% if puntos_usuario >= r.puntos_requeridos and r.disponible %}border-success{% endif %}">
+                <!-- Icono de categoría -->
+                <div class="reward-icon">
+                    {% if r.categoria == 'comida' %}
+                    ☕
+                    {% elif r.categoria == 'descuentos' %}
+                    🏷️
+                    {% elif r.categoria == 'entretenimiento' %}
+                    🎬
+                    {% elif r.categoria == 'productos' %}
+                    🎁
+                    {% elif r.categoria == 'donacion' %}
+                    💚
+                    {% else %}
+                    🎯
+                    {% endif %}
+                </div>
+
+                <h5 class="reward-name">{{ r.nombre }}</h5>
+                <p class="text-muted small mb-3">{{ r.descripcion }}</p>
+
+                <div
+                    class="reward-points mb-3 {% if puntos_usuario >= r.puntos_requeridos %}text-success{% else %}text-danger{% endif %}">
+                    {{ r.puntos_requeridos }} pts
+                </div>
+
+                <!-- Comparación con puntos del usuario -->
+                {% if puntos_usuario >= r.puntos_requeridos %}
+                <small class="text-success mb-2 d-block">
+                    <i class="bi bi-check-circle me-1"></i>Tienes suficientes puntos
+                </small>
+                {% else %}
+                <small class="text-danger mb-2 d-block">
+                    <i class="bi bi-x-circle me-1"></i>Te faltan {{ r.puntos_requeridos - puntos_usuario }} pts
+                </small>
+                {% endif %}
+
+                <!-- Stock -->
+                <div class="mb-3">
+                    {% if r.stock > 10 %}
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle me-1"></i>Disponible
+                    </span>
+                    {% elif r.stock > 0 %}
+                    <span class="badge bg-warning text-dark">
+                        <i class="bi bi-exclamation-triangle me-1"></i>Solo {{ r.stock }} disponibles
+                    </span>
+                    {% else %}
+                    <span class="badge bg-danger">
+                        <i class="bi bi-x-circle me-1"></i>Agotado
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Categoría -->
+                <span class="badge bg-light text-dark mb-3">
+                    {{ r.categoria|capitalize }}
+                </span>
+
+                {% if r.disponible and puntos_usuario >= r.puntos_requeridos %}
+                <button class="btn btn-success w-100"
+                    onclick="confirmarCanje({{ r.id }}, '{{ r.nombre }}', {{ r.puntos_requeridos }})">
+                    <i class="bi bi-cart-plus me-1"></i>Canjear Ahora
+                </button>
+                {% elif r.disponible %}
+                <button class="btn btn-outline-secondary w-100" disabled>
+                    <i class="bi bi-lock me-1"></i>Puntos insuficientes
+                </button>
+                {% else %}
+                <button class="btn btn-secondary w-100" disabled>
+                    No disponible
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-gift"></i>
+        <h5>No hay recompensas disponibles</h5>
+        <p>Próximamente agregaremos nuevas recompensas al catálogo.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal de Confirmación de Canje -->
+<div class="modal fade" id="modalCanje" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-gift me-2"></i>Confirmar Canje
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="form-canjear" method="POST" action="">
+                <div class="modal-body">
+                    <p class="text-center mb-3">Estás a punto de canjear:</p>
+                    <div class="bg-light rounded p-4 mb-3 text-center">
+                        <h4 id="modal-recompensa-nombre" class="mb-2">-</h4>
+                        <span class="text-success fs-3 fw-bold" id="modal-puntos">0 pts</span>
+                    </div>
+
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>{{ current_user.nombre }}</strong>, se descontarán
+                        <span id="modal-puntos-descuento">0</span> puntos de tu cuenta.
+                        <br>
+                        <small>Puntos actuales: {{ puntos_usuario }} →
+                            Restantes: <span id="modal-puntos-restantes">0</span></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check2-circle me-1"></i>Confirmar Canje
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const puntosUsuario = {{ puntos_usuario }};
+
+    function confirmarCanje(id, nombre, puntos) {
+        document.getElementById('modal-recompensa-nombre').textContent = nombre;
+        document.getElementById('modal-puntos').textContent = puntos + ' pts';
+        document.getElementById('modal-puntos-descuento').textContent = puntos;
+        document.getElementById('modal-puntos-restantes').textContent = puntosUsuario - puntos;
+
+        // Actualizar la acción del formulario
+        document.getElementById('form-canjear').action = '/canjear/' + id;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalCanje'));
+        modal.show();
+    }
+</script>
+{% endblock %}
