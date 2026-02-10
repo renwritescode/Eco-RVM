@@ -5,6 +5,7 @@ Flask==3.0.0
 Flask-SQLAlchemy==3.1.1
 Flask-CORS==4.0.0
 Flask-Migrate==4.0.5
+Flask-Login==0.6.3
 Werkzeug==3.0.1
 
 # Validación
@@ -13,14 +14,14 @@ marshmallow==3.20.1
 # Configuración
 python-dotenv==1.0.0
 
-# Vision Artificial e IA
-# tensorflow>=2.15.0  # Requiere Python 3.11
-opencv-python==4.9.0.80
-numpy>=1.26.0
-matplotlib==3.8.2
+# Vision Artificial e IA (No needed for Cloud Backend)
+# tensorflow>=2.15.0
+# opencv-python==4.9.0.80
+# numpy>=1.26.0
+# matplotlib==3.8.2
 
-# Comunicación Serial
-pyserial==3.5
+# Comunicación Serial (No needed for Cloud Backend)
+# pyserial==3.5
 
 # Cliente HTTP
 requests==2.31.0
@@ -36,3 +37,6 @@ flake8==7.0.0
 
 # Producción (opcional)
 gunicorn==21.2.0
+
+# Database (Supabase/Postgres)
+psycopg2-binary==2.9.9

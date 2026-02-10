@@ -34,7 +34,8 @@
                             <span class="text-muted">{{ usuario.puntos_totales % 100 }}/100 pts</span>
                         </div>
                         <div class="level-progress">
-                            <div class="progress-bar" style="width: {{ usuario.puntos_totales % 100 }}%"></div>
+                            <div class="progress-bar dynamic-width" data-width="{{ usuario.puntos_totales % 100 }}%">
+                            </div>
                         </div>
                         <small class="text-muted">{{ 100 - (usuario.puntos_totales % 100) }} pts para el siguiente
                             nivel</small>
@@ -93,8 +94,7 @@
                 <div class="card-body">
                     <div class="d-flex flex-wrap gap-2">
                         {% for ub in badges %}
-                        <span class="user-badge"
-                            style="background-color: {{ ub.badge.color }}20; border: 2px solid {{ ub.badge.color }};">
+                        <span class="user-badge dynamic-badge" data-color="{{ ub.badge.color }}">
                             <span class="badge-icon">{{ ub.badge.icono }}</span>
                             <span>{{ ub.badge.nombre }}</span>
                         </span>
@@ -143,9 +143,9 @@
                                     <td>{{ t.resultado_ia or '-' }}</td>
                                     <td>
                                         {% if t.confianza_ia %}
-                                        <div class="progress" style="height: 8px; width: 60px;">
-                                            <div class="progress-bar bg-success"
-                                                style="width: {{ (t.confianza_ia * 100)|int }}%"></div>
+                                        <div class="progress me-2" style="height: 8px; width: 60px;">
+                                            <div class="progress-bar bg-success dynamic-width"
+                                                data-width="{{ (t.confianza_ia * 100)|int }}%"></div>
                                         </div>
                                         <small class="text-muted">{{ (t.confianza_ia * 100)|round(1) }}%</small>
                                         {% else %}

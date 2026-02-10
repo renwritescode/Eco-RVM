@@ -4,178 +4,307 @@
 
 {% block content %}
 <div class="container-fluid">
-    <!-- Título y bienvenida -->
-    <div class="row mb-4">
+    <!-- Hero Section -->
+    <div class="row mb-5">
         <div class="col-12">
-            <h1 class="display-6 mb-2">
-                <i class="bi bi-speedometer2 me-2"></i>Dashboard Principal
-            </h1>
-            <p class="text-muted">
-                Hola, <strong>{{ current_user.nombre }}</strong>! Aquí puedes ver el ranking general de recicladores.
-            </p>
+            <div class="card bg-primary text-white border-0 shadow-lg" style="background: var(--gradient-primary);">
+                <div class="card-body p-5 position-relative overflow-hidden">
+                    <div class="position-relative z-1">
+                        <h1 class="display-5 fw-bold mb-3">¡Hola, {{ current_user.nombre }}! 👋</h1>
+                        <p class="lead mb-0 opacity-90" style="max-width: 600px;">
+                            Tu contribución está haciendo la diferencia. Revisa tu impacto ambiental y compite por ser
+                            el mejor reciclador del campus.
+                        </p>
+                    </div>
+                    <!-- Decorative Circle -->
+                    <div class="position-absolute top-0 end-0 rounded-circle bg-white"
+                        style="width: 300px; height: 300px; transform: translate(30%, -30%); opacity: 0.1;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Tarjetas de Estadísticas Generales -->
+    <!-- Stats Cards -->
     <div class="row g-4 mb-5">
         <div class="col-md-6 col-lg-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center">
+            <div class="stats-card h-100">
+                <div class="d-flex align-items-center mb-3">
                     <div class="stats-icon blue">
                         <i class="bi bi-people-fill"></i>
                     </div>
-                    <div class="ms-3">
-                        <p class="stats-value">{{ usuarios|length }}</p>
-                        <p class="stats-label">Usuarios Activos</p>
+                    <div>
+                        <p class="stats-label">Comunidad</p>
+                        <h3 class="stats-value">{{ usuarios|length }}</h3>
                     </div>
+                </div>
+                <div class="progress" style="height: 4px;">
+                    <div class="progress-bar bg-primary" style="width: 75%"></div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center">
+            <div class="stats-card h-100">
+                <div class="d-flex align-items-center mb-3">
                     <div class="stats-icon green">
-                        <i class="bi bi-coin"></i>
+                        <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <div class="ms-3">
+                    <div>
+                        <p class="stats-label">Puntos Globales</p>
                         {% set total_puntos = usuarios|map(attribute='puntos_totales')|sum %}
-                        <p class="stats-value">{{ total_puntos }}</p>
-                        <p class="stats-label">Puntos Totales</p>
+                        <h3 class="stats-value">{{ total_puntos }}</h3>
                     </div>
+                </div>
+                <div class="progress" style="height: 4px;">
+                    <div class="progress-bar bg-success" style="width: 60%"></div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center">
+            <div class="stats-card h-100">
+                <div class="d-flex align-items-center mb-3">
                     <div class="stats-icon orange">
-                        <i class="bi bi-graph-up-arrow"></i>
+                        <i class="bi bi-star-fill"></i>
                     </div>
-                    <div class="ms-3">
+                    <div>
+                        <p class="stats-label">Promedio</p>
                         {% set promedio = (total_puntos / usuarios|length)|round(1) if usuarios|length > 0 else 0 %}
-                        <p class="stats-value">{{ promedio }}</p>
-                        <p class="stats-label">Promedio/Usuario</p>
+                        <h3 class="stats-value">{{ promedio }}</h3>
                     </div>
+                </div>
+                <div class="progress" style="height: 4px;">
+                    <div class="progress-bar bg-warning" style="width: 45%"></div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center">
+            <div class="stats-card h-100">
+                <div class="d-flex align-items-center mb-3">
                     <div class="stats-icon purple">
                         <i class="bi bi-recycle"></i>
                     </div>
-                    <div class="ms-3">
-                        <p class="stats-value" id="total-reciclajes">--</p>
-                        <p class="stats-label">Reciclajes Totales</p>
+                    <div>
+                        <p class="stats-label">Reciclajes</p>
+                        <h3 class="stats-value" id="total-reciclajes">
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                        </h3>
                     </div>
+                </div>
+                <div class="progress" style="height: 4px;">
+                    <div class="progress-bar" style="width: 80%; background-color: #8b5cf6;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tabla de Ranking (Solo visualización, sin acciones) -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-trophy-fill text-warning me-2"></i>Ranking de Recicladores
-            </h5>
-            <span class="badge bg-primary">Top {{ usuarios|length }}</span>
+    <div class="row g-4">
+        <!-- Chart Section -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center border-0 bg-transparent py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-graph-up text-primary me-2"></i>Actividad de Reciclaje
+                    </h5>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary active">Semana</button>
+                        <button class="btn btn-sm btn-outline-secondary">Mes</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body p-0">
-            {% if usuarios %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th style="width: 60px;">Pos</th>
-                            <th>Usuario</th>
-                            <th>Nivel</th>
-                            <th>Racha</th>
-                            <th class="text-end">Puntos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for usuario in usuarios %}
-                        <tr class="{% if usuario.id == current_user.id %}table-primary{% endif %}">
-                            <td>
-                                {% if loop.index == 1 %}
-                                <span class="badge-rank gold">🥇</span>
-                                {% elif loop.index == 2 %}
-                                <span class="badge-rank silver">🥈</span>
-                                {% elif loop.index == 3 %}
-                                <span class="badge-rank bronze">🥉</span>
-                                {% else %}
-                                <span class="badge-rank default">{{ loop.index }}</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                        style="width: 40px; height: 40px; font-weight: 600;">
-                                        {{ usuario.nombre[0] }}{{ usuario.apellido[0] }}
-                                    </div>
-                                    <div class="ms-3">
-                                        <strong>
-                                            {{ usuario.nombre }} {{ usuario.apellido }}
-                                            {% if usuario.id == current_user.id %}
-                                            <span class="badge bg-success ms-1">Tú</span>
-                                            {% endif %}
-                                        </strong>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-info">Nivel {{ usuario.nivel }}</span>
-                            </td>
-                            <td>
-                                {% if usuario.racha_dias > 0 %}
-                                <span class="streak-badge">
-                                    <i class="bi bi-fire"></i>
-                                    {{ usuario.racha_dias }} días
-                                </span>
-                                {% else %}
-                                <span class="text-muted">Sin racha</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-end">
-                                <span class="points-badge">{{ usuario.puntos_totales }} pts</span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+
+        <!-- Ranking Section -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header border-0 bg-transparent py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-trophy-fill text-warning me-2"></i>Top Recicladores
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if usuarios %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Rank</th>
+                                    <th>Usuario</th>
+                                    <th class="text-end pe-4">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios[:5] %}
+                                <tr>
+                                    <td class="ps-4">
+                                        {% if loop.index == 1 %}
+                                        <div class="badge-rank gold shadow-sm">1</div>
+                                        {% elif loop.index == 2 %}
+                                        <div class="badge-rank silver shadow-sm">2</div>
+                                        {% elif loop.index == 3 %}
+                                        <div class="badge-rank bronze shadow-sm">3</div>
+                                        {% else %}
+                                        <div class="badge-rank default">{{ loop.index }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div
+                                                class="user-avatar-sm me-2 fw-bold {{ 'avatar-rank-1' if loop.index == 1 else 'avatar-default' }}">
+                                                {{ usuario.nombre[0] }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">{{ usuario.nombre }}</div>
+                                                <small class="text-muted d-block" style="font-size: 0.75rem;">Nivel {{
+                                                    usuario.nivel }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <span class="fw-bold text-success">{{ usuario.puntos_totales }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-5">
+                        <i class="bi bi-inbox text-muted opacity-25"></i>
+                        <p class="mb-0 text-muted mt-2">No hay datos aún</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-top-0 text-center py-3">
+                    <a href="#" class="text-decoration-none text-primary fw-bold text-sm">Ver Ranking Completo <i
+                            class="bi bi-arrow-right ms-1"></i></a>
+                </div>
             </div>
-            {% else %}
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <h5>No hay usuarios registrados</h5>
-                <p>Los usuarios aparecerán aquí cuando se registren.</p>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Cargar estadísticas adicionales vía API
     document.addEventListener('DOMContentLoaded', async function () {
+        const ctx = document.getElementById('activityChart').getContext('2d');
+
+        // Gradient for chart
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+        gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+        let activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [{
+                    label: 'Reciclajes',
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#10b981',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#10b981',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        titleColor: '#111827',
+                        bodyColor: '#4b5563',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
+                        callbacks: {
+                            label: function (context) {
+                                return context.parsed.y + ' Reciclajes';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f3f4f6',
+                            borderDash: [5, 5]
+                        },
+                        ticks: { font: { family: 'Outfit' }, color: '#9ca3af', precision: 0 },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Outfit' }, color: '#9ca3af' },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Load API Stats
         try {
             const response = await fetch('/api/stats/dashboard');
             const data = await response.json();
 
+            // Update Total Stats
             if (data.estadisticas) {
                 document.getElementById('total-reciclajes').textContent =
                     data.estadisticas.total_transacciones || 0;
             }
+
+            // Update Chart
+            if (data.reciclajes_semana) {
+                // Process data: expected format {"YYYY-MM-DD": count, ...}
+                const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+                const sortedDates = Object.keys(data.reciclajes_semana).sort();
+
+                const labels = [];
+                const counts = [];
+
+                // If we have data, use it. Otherwise keep defaults.
+                if (sortedDates.length > 0) {
+                    sortedDates.forEach(dateStr => {
+                        const date = new Date(dateStr); // Ensure proper parsing
+                        // Validar si la fecha es correcta
+                        if (!isNaN(date)) {
+                            // Use UTC methods to avoid timezone shift issues if backend sends YYYY-MM-DD
+                            const dayIndex = date.getUTCDay();
+                            labels.push(days[dayIndex]);
+                            counts.push(data.reciclajes_semana[dateStr]);
+                        }
+                    });
+
+                    // Update chart only if we have valid data points
+                    if (labels.length > 0) {
+                        activityChart.data.labels = labels;
+                        activityChart.data.datasets[0].data = counts;
+                        activityChart.update();
+                    }
+                }
+            }
+
         } catch (error) {
             console.error('Error cargando stats:', error);
-            document.getElementById('total-reciclajes').textContent = '0';
+            document.getElementById('total-reciclajes').textContent = '-';
         }
     });
 </script>

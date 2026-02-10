@@ -3,106 +3,159 @@
 {% block title %}Crear Cuenta - Eco-RVM{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-success text-white text-center py-4">
-                    <i class="bi bi-person-plus display-4"></i>
-                    <h3 class="mt-2 mb-0">Únete a Eco-RVM</h3>
-                    <p class="mb-0 opacity-75">Crea tu cuenta y empieza a reciclar</p>
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <!-- Register Form -->
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="text-center mb-4 animate-float">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle shadow-lg p-3 mb-3"
+                    style="width: 80px; height: 80px;">
+                    <i class="bi bi-person-plus text-success display-4"></i>
                 </div>
+                <h2 class="fw-bold text-dark">Únete a Eco-RVM</h2>
+                <p class="text-muted">Crea tu cuenta y empieza a reciclar hoy mismo</p>
+            </div>
 
-                <div class="card-body p-4">
+            <div class="card shadow-lg border-0 bg-white position-relative overflow-hidden"
+                style="border-radius: 20px;">
+                <div class="position-absolute top-0 start-0 w-100 h-1 bg-gradient-success" style="height: 5px;"></div>
+                <div class="card-body p-5">
                     <form method="POST" action="{{ url_for('registro') }}">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nombre" class="form-label">
-                                    <i class="bi bi-person me-1"></i>Nombre
-                                </label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" required
-                                    placeholder="Tu nombre">
+                                <label for="nombre"
+                                    class="form-label text-muted small fw-bold text-uppercase">Nombre</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i
+                                            class="bi bi-person text-muted"></i></span>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="nombre"
+                                        name="nombre" required placeholder="Tu nombre">
+                                </div>
                             </div>
-
                             <div class="col-md-6 mb-3">
-                                <label for="apellido" class="form-label">
-                                    <i class="bi bi-person me-1"></i>Apellido
-                                </label>
-                                <input type="text" class="form-control" id="apellido" name="apellido" required
-                                    placeholder="Tu apellido">
+                                <label for="apellido"
+                                    class="form-label text-muted small fw-bold text-uppercase">Apellido</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i
+                                            class="bi bi-person text-muted"></i></span>
+                                    <input type="text" class="form-control bg-light border-0 py-2" id="apellido"
+                                        name="apellido" required placeholder="Tu apellido">
+                                </div>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">
-                                <i class="bi bi-envelope me-1"></i>Correo Electrónico
-                            </label>
-                            <input type="email" class="form-control" id="email" name="email" required
-                                placeholder="tu@correo.com">
-                            <div class="form-text">Este será tu usuario para iniciar sesión</div>
+                            <label for="email" class="form-label text-muted small fw-bold text-uppercase">Correo
+                                Electrónico</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i
+                                        class="bi bi-envelope text-muted"></i></span>
+                                <input type="email" class="form-control bg-light border-0 py-2" id="email" name="email"
+                                    required placeholder="tu@correo.com">
+                            </div>
+                            <div class="form-text small"><i class="bi bi-info-circle me-1"></i>Usaremos este correo para
+                                iniciar sesión</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">
-                                <i class="bi bi-lock me-1"></i>Contraseña
-                            </label>
-                            <input type="password" class="form-control" id="password" name="password" required
-                                minlength="6" placeholder="Mínimo 6 caracteres">
+                            <label for="password"
+                                class="form-label text-muted small fw-bold text-uppercase">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i
+                                        class="bi bi-lock text-muted"></i></span>
+                                <input type="password" class="form-control bg-light border-0 py-2" id="password"
+                                    name="password" required minlength="6" placeholder="Mínimo 6 caracteres">
+                            </div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="password_confirm" class="form-label">
-                                <i class="bi bi-lock-fill me-1"></i>Confirmar Contraseña
-                            </label>
-                            <input type="password" class="form-control" id="password_confirm" name="password_confirm"
-                                required placeholder="Repite tu contraseña">
+                            <label for="password_confirm"
+                                class="form-label text-muted small fw-bold text-uppercase">Confirmar Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i
+                                        class="bi bi-shield-lock text-muted"></i></span>
+                                <input type="password" class="form-control bg-light border-0 py-2" id="password_confirm"
+                                    name="password_confirm" required placeholder="Repite tu contraseña">
+                            </div>
                         </div>
 
-                        <!-- Info sobre código virtual -->
-                        <div class="alert alert-info mb-4">
-                            <i class="bi bi-info-circle-fill me-2"></i>
-                            <strong>¿Cómo funciona?</strong>
-                            <p class="mb-0 small mt-1">
-                                Al registrarte, recibirás un <strong>código virtual único</strong>
-                                (ejemplo: ECO-XXXX) que funcionará como tu identificador
-                                en las máquinas de reciclaje.
-                            </p>
+                        <!-- Virtual Code Info -->
+                        <div class="alert alert-soft-info border-0 d-flex align-items-center mb-4" role="alert"
+                            style="background: rgba(13, 202, 240, 0.1); color: #055160;">
+                            <i class="bi bi-qr-code-scan fs-3 me-3"></i>
+                            <div>
+                                <strong>Código Virtual Único</strong>
+                                <div class="small opacity-75">Obtendrás un ID único para usar en las máquinas.</div>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-success btn-lg w-100">
-                            <i class="bi bi-check-circle me-2"></i>Crear Mi Cuenta
+                        <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-bold shadow-sm mb-3"
+                            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                            Crear Mi Cuenta
                         </button>
                     </form>
 
-                    <hr class="my-4">
-
-                    <div class="text-center">
-                        <p class="mb-2">¿Ya tienes cuenta?</p>
-                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
-                        </a>
+                    <div class="text-center pt-3 border-top">
+                        <p class="small text-muted mb-0">¿Ya tienes cuenta? <a href="{{ url_for('login') }}"
+                                class="text-success fw-bold text-decoration-none">Inicia Sesión</a></p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Beneficios -->
-            <div class="row mt-4">
-                <div class="col-4">
-                    <div class="card border-0 text-center py-3">
-                        <i class="bi bi-coin text-warning display-6"></i>
-                        <p class="small mt-2 mb-0">Gana puntos reciclando</p>
+        <!-- Benefits Sidebar -->
+        <div class="col-lg-4 d-none d-lg-block mt-5 pt-3">
+            <div class="ps-4">
+                <h4 class="fw-bold mb-4 text-dark">¿Por qué registrarse?</h4>
+
+                <div class="d-flex mb-4 align-items-start">
+                    <div class="rounded-circle bg-white shadow-sm p-3 d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px;">
+                        <i class="bi bi-tree text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Impacto Real</h6>
+                        <p class="text-muted small mb-0">Monitorea cuántas botellas y latas has salvado del vertedero.
+                        </p>
                     </div>
                 </div>
-                <div class="col-4">
-                    <div class="card border-0 text-center py-3">
-                        <i class="bi bi-gift text-danger display-6"></i>
-                        <p class="small mt-2 mb-0">Canjea recompensas</p>
+
+                <div class="d-flex mb-4 align-items-start">
+                    <div class="rounded-circle bg-white shadow-sm p-3 d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px;">
+                        <i class="bi bi-trophy text-warning fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Compite y Gana</h6>
+                        <p class="text-muted small mb-0">Sube en el ranking y demuestra tu compromiso con el planeta.
+                        </p>
                     </div>
                 </div>
-                <div class="col-4">
-                    <div class="card border-0 text-center py-3">
-                        <i class="bi bi-tree text-success display-6"></i>
-                        <p class="small mt-2 mb-0">Cuida el planeta</p>
+
+                <div class="d-flex mb-4 align-items-start">
+                    <div class="rounded-circle bg-white shadow-sm p-3 d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px;">
+                        <i class="bi bi-gift text-danger fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Recompensas Exclusivas</h6>
+                        <p class="text-muted small mb-0">Canjea tus puntos por premios y beneficios universitarios.</p>
+                    </div>
+                </div>
+
+                <div class="card bg-dark text-white border-0 overflow-hidden"
+                    style="border-radius: 15px; background: linear-gradient(135deg, #1f2937, #111827);">
+                    <div class="card-body position-relative">
+                        <!-- Icono decorativo (fondo) -->
+                        <i class="bi bi-lightbulb position-absolute top-0 end-0 p-3 text-white"
+                            style="opacity: 0.05; font-size: 5rem; z-index: 0; pointer-events: none;"></i>
+
+                        <!-- Contenido (frente) -->
+                        <div class="position-relative" style="z-index: 1;">
+                            <small class="text-uppercase opacity-50 fw-bold letter-spacing-1">Dato Curioso</small>
+                            <p class="mt-2 mb-0 small opacity-90">"Reciclar una sola botella de plástico ahorra
+                                suficiente energía para encender una bombilla de 60W durante 6 horas."</p>
+                        </div>
                     </div>
                 </div>
             </div>

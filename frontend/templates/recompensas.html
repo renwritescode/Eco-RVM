@@ -3,25 +3,33 @@
 {% block title %}Recompensas - Eco-RVM{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid pb-5">
     <!-- Header con puntos del usuario -->
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-12">
-            <div class="card bg-primary text-white">
-                <div class="card-body d-flex justify-content-between align-items-center">
+            <div class="card border-0 shadow-lg overflow-hidden position-relative"
+                style="background: var(--gradient-primary); border-radius: 20px;">
+                <!-- Decorativo de fondo -->
+                <div class="position-absolute bottom-0 start-0 rounded-circle bg-white"
+                    style="width: 250px; height: 250px; transform: translate(-30%, 30%); opacity: 0.05;"></div>
+
+                <div
+                    class="card-body p-4 p-lg-5 text-white position-relative z-1 d-flex justify-content-between align-items-center flex-wrap">
                     <div>
-                        <h1 class="display-6 mb-0">
-                            <i class="bi bi-gift-fill me-2"></i>Catálogo de Recompensas
+                        <h1 class="display-5 fw-bold mb-1">
+                            <i class="bi bi-gift-fill me-2"></i>Catálogo de Premios
                         </h1>
-                        <p class="mb-0 opacity-75">
-                            Canjea tus puntos por increíbles recompensas
+                        <p class="mb-0 opacity-90 lead">
+                            Tus esfuerzos tienen recompensa. ¡Canjea tus puntos aquí!
                         </p>
                     </div>
-                    <div class="text-center">
-                        <h2 class="mb-0">
-                            <i class="bi bi-coin me-2"></i>{{ puntos_usuario }}
-                        </h2>
-                        <small>Tus puntos disponibles</small>
+                    <div class="text-center mt-3 mt-lg-0">
+                        <div class="bg-white bg-opacity-25 rounded-4 p-3 px-4 backdrop-blur">
+                            <h2 class="display-4 fw-bold mb-0 text-white">
+                                <i class="bi bi-coin me-2 text-warning filter-drop-shadow"></i>{{ puntos_usuario }}
+                            </h2>
+                            <small class="text-uppercase fw-bold letter-spacing-1">Puntos Disponibles</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -31,126 +39,117 @@
     {% if recompensas %}
     <div class="row g-4">
         {% for r in recompensas %}
-        <div class="col-md-6 col-lg-4">
-            <div
-                class="card reward-card h-100 {% if puntos_usuario >= r.puntos_requeridos and r.disponible %}border-success{% endif %}">
-                <!-- Icono de categoría -->
-                <div class="reward-icon">
-                    {% if r.categoria == 'comida' %}
-                    ☕
-                    {% elif r.categoria == 'descuentos' %}
-                    🏷️
-                    {% elif r.categoria == 'entretenimiento' %}
-                    🎬
-                    {% elif r.categoria == 'productos' %}
-                    🎁
-                    {% elif r.categoria == 'donacion' %}
-                    💚
-                    {% else %}
-                    🎯
-                    {% endif %}
-                </div>
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm transition-hover {{ 'bg-dimmed' if puntos_usuario < r.puntos_requeridos else 'bg-white' }}"
+                style="border-radius: 20px;">
 
-                <h5 class="reward-name">{{ r.nombre }}</h5>
-                <p class="text-muted small mb-3">{{ r.descripcion }}</p>
+                <div class="card-body p-4 d-flex flex-column text-center position-relative overflow-hidden">
+                    {% if r.stock <= 0 %} <div
+                        class="position-absolute top-0 end-0 bg-danger text-white px-3 py-1 rounded-bl-3 fw-bold small">
+                        AGOTADO</div>
+                {% elif r.stock <= 5 %} <div
+                    class="position-absolute top-0 end-0 bg-warning text-dark px-3 py-1 rounded-bl-3 fw-bold small">
+                    ¡ÚLTIMOS!
+            </div>
+            {% endif %}
 
-                <div
-                    class="reward-points mb-3 {% if puntos_usuario >= r.puntos_requeridos %}text-success{% else %}text-danger{% endif %}">
-                    {{ r.puntos_requeridos }} pts
-                </div>
-
-                <!-- Comparación con puntos del usuario -->
-                {% if puntos_usuario >= r.puntos_requeridos %}
-                <small class="text-success mb-2 d-block">
-                    <i class="bi bi-check-circle me-1"></i>Tienes suficientes puntos
-                </small>
-                {% else %}
-                <small class="text-danger mb-2 d-block">
-                    <i class="bi bi-x-circle me-1"></i>Te faltan {{ r.puntos_requeridos - puntos_usuario }} pts
-                </small>
-                {% endif %}
-
-                <!-- Stock -->
-                <div class="mb-3">
-                    {% if r.stock > 10 %}
-                    <span class="badge bg-success">
-                        <i class="bi bi-check-circle me-1"></i>Disponible
-                    </span>
-                    {% elif r.stock > 0 %}
-                    <span class="badge bg-warning text-dark">
-                        <i class="bi bi-exclamation-triangle me-1"></i>Solo {{ r.stock }} disponibles
-                    </span>
-                    {% else %}
-                    <span class="badge bg-danger">
-                        <i class="bi bi-x-circle me-1"></i>Agotado
-                    </span>
-                    {% endif %}
-                </div>
-
-                <!-- Categoría -->
-                <span class="badge bg-light text-dark mb-3">
-                    {{ r.categoria|capitalize }}
+            <!-- Icono de categoría -->
+            <div class="mx-auto mb-4 p-4 rounded-circle bg-light shadow-inner d-flex align-items-center justify-content-center animate-float"
+                style="width: 100px; height: 100px;">
+                <span class="display-3">
+                    {% if r.categoria == 'comida' %}☕{% elif r.categoria == 'descuentos' %}🏷️{% elif r.categoria ==
+                    'entretenimiento' %}🎬{% elif r.categoria == 'productos' %}🎁{% elif r.categoria == 'donacion'
+                    %}💚{% else %}🎯{% endif %}
                 </span>
+            </div>
 
-                {% if r.disponible and puntos_usuario >= r.puntos_requeridos %}
-                <button class="btn btn-success w-100"
-                    onclick="confirmarCanje({{ r.id }}, '{{ r.nombre }}', {{ r.puntos_requeridos }})">
-                    <i class="bi bi-cart-plus me-1"></i>Canjear Ahora
+            <h5 class="fw-bold mb-2 text-dark">{{ r.nombre }}</h5>
+            <p class="text-muted small mb-3 flex-grow-1">{{ r.descripcion }}</p>
+
+            <div class="mb-3">
+                <span class="badge border border-light text-dark bg-light rounded-pill px-3 py-1">{{
+                    r.categoria|capitalize }}</span>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="fw-bold {{ 'text-success' if puntos_usuario >= r.puntos_requeridos else 'text-danger' }}">
+                    {{ r.puntos_requeridos }} <small class="fs-6 text-muted">pts</small>
+                </h3>
+            </div>
+
+            <div class="mt-auto">
+                {% if r.disponible and puntos_usuario >= r.puntos_requeridos and r.stock > 0 %}
+                <button class="btn btn-success w-100 rounded-pill fw-bold shadow-sm py-2" data-id="{{ r.id }}"
+                    data-nombre="{{ r.nombre }}" data-puntos="{{ r.puntos_requeridos }}" onclick="confirmarCanje(this)"
+                    style="background: var(--gradient-primary); border: none;">
+                    <i class="bi bi-cart-plus me-1"></i>Canjear
                 </button>
-                {% elif r.disponible %}
-                <button class="btn btn-outline-secondary w-100" disabled>
-                    <i class="bi bi-lock me-1"></i>Puntos insuficientes
-                </button>
-                {% else %}
-                <button class="btn btn-secondary w-100" disabled>
-                    No disponible
-                </button>
-                {% endif %}
+                {% elif r.stock <= 0 %} <button class="btn btn-secondary w-100 rounded-pill fw-bold py-2 disabled"
+                    disabled style="opacity: 0.7;">
+                    <i class="bi bi-emoji-frown me-1"></i>Agotado
+                    </button>
+                    {% else %}
+                    <button class="btn btn-outline-secondary w-100 rounded-pill fw-bold py-2" disabled
+                        style="border-style: dashed;">
+                        <i class="bi bi-lock me-1"></i>Faltan {{ r.puntos_requeridos - puntos_usuario }} pts
+                    </button>
+                    {% endif %}
             </div>
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <div class="empty-state">
-        <i class="bi bi-gift"></i>
-        <h5>No hay recompensas disponibles</h5>
-        <p>Próximamente agregaremos nuevas recompensas al catálogo.</p>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <div class="bg-light rounded-circle d-inline-flex p-4 mb-3">
+        <i class="bi bi-gift text-muted opacity-50 display-4"></i>
     </div>
-    {% endif %}
+    <h5 class="text-muted fw-bold">No hay recompensas disponibles por ahora</h5>
+    <p class="text-muted">¡Vuelve pronto para ver nuevas sorpresas!</p>
+</div>
+{% endif %}
 </div>
 
 <!-- Modal de Confirmación de Canje -->
 <div class="modal fade" id="modalCanje" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-gift me-2"></i>Confirmar Canje
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-success text-white"
+                style="background: var(--gradient-primary); border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-gift-fill me-2"></i>Confirmar Canje
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="form-canjear" method="POST" action="">
-                <div class="modal-body">
-                    <p class="text-center mb-3">Estás a punto de canjear:</p>
-                    <div class="bg-light rounded p-4 mb-3 text-center">
-                        <h4 id="modal-recompensa-nombre" class="mb-2">-</h4>
-                        <span class="text-success fs-3 fw-bold" id="modal-puntos">0 pts</span>
+                <div class="modal-body p-4 text-center">
+                    <p class="mb-2 text-muted uppercase tracking-wide small fw-bold">Estás a punto de canjear:</p>
+                    <h3 id="modal-recompensa-nombre" class="fw-bold text-dark mb-4">-</h3>
+
+                    <div class="d-flex justify-content-center align-items-center mb-4">
+                        <div class="text-center px-4 border-end">
+                            <div class="text-muted small">Costo</div>
+                            <div class="fs-4 fw-bold text-danger">-<span id="modal-puntos">0</span></div>
+                        </div>
+                        <div class="text-center px-4">
+                            <div class="text-muted small">Saldo Final</div>
+                            <div class="fs-4 fw-bold text-success" id="modal-puntos-restantes">0</div>
+                        </div>
                     </div>
 
-                    <div class="alert alert-info mb-0">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>{{ current_user.nombre }}</strong>, se descontarán
-                        <span id="modal-puntos-descuento">0</span> puntos de tu cuenta.
-                        <br>
-                        <small>Puntos actuales: {{ puntos_usuario }} →
-                            Restantes: <span id="modal-puntos-restantes">0</span></small>
+                    <div class="alert alert-soft-info border-0 d-flex align-items-center justify-content-center"
+                        style="background: rgba(13, 202, 240, 0.1); color: #055160;">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <small>Esta acción no se puede deshacer.</small>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x me-1"></i>Cancelar
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                        Cancelar
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm"
+                        style="background: var(--gradient-primary); border: none;">
                         <i class="bi bi-check2-circle me-1"></i>Confirmar Canje
                     </button>
                 </div>
@@ -162,12 +161,17 @@
 
 {% block extra_js %}
 <script>
-    const puntosUsuario = {{ puntos_usuario }};
+    // Convertir a número seguro para evitar errores de linter
+    const puntosUsuario = Number('{{ puntos_usuario }}');
 
-    function confirmarCanje(id, nombre, puntos) {
+    function confirmarCanje(btn) {
+        // Leer datos del botón (dataset)
+        const id = btn.dataset.id;
+        const nombre = btn.dataset.nombre;
+        const puntos = Number(btn.dataset.puntos);
+
         document.getElementById('modal-recompensa-nombre').textContent = nombre;
-        document.getElementById('modal-puntos').textContent = puntos + ' pts';
-        document.getElementById('modal-puntos-descuento').textContent = puntos;
+        document.getElementById('modal-puntos').textContent = puntos;
         document.getElementById('modal-puntos-restantes').textContent = puntosUsuario - puntos;
 
         // Actualizar la acción del formulario

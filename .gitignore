@@ -53,3 +53,11 @@ htmlcov/
 # Temporary files
 *.tmp
 *.temp
+
+# Proyecto / Diagramas (No subir al repo)
+*.mmd
+*.puml
+diagrams.md
+REPORTE_ENTRENAMIENTO.md
+cronograma.*
+diagram.*

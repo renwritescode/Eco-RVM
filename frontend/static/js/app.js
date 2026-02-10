@@ -248,3 +248,22 @@ window.EcoRVM = {
     redeemReward,
     loadDashboardStats
 };
+
+// Aplicar estilos dinámicos desde atributos data-* (Fix para linters)
+document.addEventListener('DOMContentLoaded', function () {
+    // Anchos dinámicos (Progress Bars)
+    document.querySelectorAll('.dynamic-width').forEach(el => {
+        if (el.dataset.width) {
+            el.style.width = el.dataset.width;
+        }
+    });
+
+    // Colores dinámicos (Badges)
+    document.querySelectorAll('.dynamic-badge').forEach(el => {
+        if (el.dataset.color) {
+            const color = el.dataset.color;
+            el.style.backgroundColor = color + '20'; // Opacidad 20%
+            el.style.border = `2px solid ${color}`;
+        }
+    });
+});

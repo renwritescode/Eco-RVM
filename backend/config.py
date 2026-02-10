@@ -25,12 +25,18 @@ class Config:
     # Base de datos
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # Directorio de datos  
-    DATA_DIR = BASE_DIR / 'data'
+    # Directorio de datos y logs
+    # En Vercel (read-only), usar /tmp
+    if os.getenv('VERCEL') or os.getenv('FLASK_ENV') == 'production':
+        BASE_WRITABLE_DIR = Path('/tmp')
+    else:
+        BASE_WRITABLE_DIR = BASE_DIR
+
+    DATA_DIR = BASE_WRITABLE_DIR / 'data'
     DATA_DIR.mkdir(exist_ok=True)
     
     # Logs
-    LOG_DIR = BASE_DIR / 'logs'
+    LOG_DIR = BASE_WRITABLE_DIR / 'logs'
     LOG_DIR.mkdir(exist_ok=True)
     LOG_FILE = LOG_DIR / 'eco_rvm.log'
     

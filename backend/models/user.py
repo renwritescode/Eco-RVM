@@ -21,7 +21,7 @@ class Usuario(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
     # Identificación
-    uid_rfid = db.Column(db.String(20), unique=True, nullable=False, index=True)
+    uid_rfid = db.Column(db.String(50), unique=True, nullable=False, index=True)
     codigo_virtual = db.Column(db.String(20), unique=True, nullable=True)  # ECO-XXXX
     
     # Información personal

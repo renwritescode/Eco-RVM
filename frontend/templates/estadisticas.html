@@ -169,7 +169,8 @@
                                 </a>
                             </td>
                             <td>
-                                <small>{{ t.fecha_hora[:16].replace('T', ' ') if t.fecha_hora is string else t.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</small>
+                                <small>{{ t.fecha_hora[:16].replace('T', ' ') if t.fecha_hora is string else
+                                    t.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</small>
                             </td>
                             <td>
                                 <span class="badge bg-info">{{ t.tipo_objeto|capitalize }}</span>
@@ -179,8 +180,8 @@
                                 {% if t.confianza_ia %}
                                 <div class="d-flex align-items-center">
                                     <div class="progress me-2" style="height: 8px; width: 60px;">
-                                        <div class="progress-bar bg-success"
-                                            style="width: {{ (t.confianza_ia * 100)|int }}%"></div>
+                                        <div class="progress-bar bg-success dynamic-width"
+                                            data-width="{{ (t.confianza_ia * 100)|int }}%"></div>
                                     </div>
                                     <small>{{ (t.confianza_ia * 100)|round(1) }}%</small>
                                 </div>
@@ -209,14 +210,21 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    // Datos de reciclajes por día
-    const reciclajesData = {{ reciclajes_semana | tojson | safe }};
+<!-- Contenedor de la gráfica con datos seguros -->
+<div id="reciclajes-data-container" data-json="{{ reciclajes_semana | tojson | safe | forceescape }}"></div>
 
-    // Crear gráfica
+<script>
     document.addEventListener('DOMContentLoaded', function () {
-        if (reciclajesData && Object.keys(reciclajesData).length > 0) {
-            EcoRVM.createRecyclingChart('chart-reciclajes', reciclajesData);
+        const container = document.getElementById('reciclajes-data-container');
+        if (container) {
+            try {
+                const reciclajesData = JSON.parse(container.dataset.json);
+                if (reciclajesData && Object.keys(reciclajesData).length > 0) {
+                    EcoRVM.createRecyclingChart('chart-reciclajes', reciclajesData);
+                }
+            } catch (e) {
+                console.error('Error parsing chart data:', e);
+            }
         }
     });
 </script>
