@@ -253,3 +253,60 @@ def vincular_tarjeta():
             'exito': False,
             'error': f'Error en el servidor: {str(e)}'
         }), 500
+
+
+@users_bp.route('/login_codigo/<string:codigo>', methods=['GET'])
+def login_por_codigo(codigo):
+    """
+    Autenticar usuario por código virtual (para login por keypad).
+    Usa el campo codigo_virtual existente en lugar de ID numérico.
+    
+    Args:
+        codigo: Código virtual del usuario (ej: ECO-DEMO001, 33A40A)
+    
+    Response JSON (éxito):
+        {
+            "existe": true,
+            "usuario": {
+                "id": 1,
+                "nombre": "Juan",
+                "apellido": "Perez",
+                "codigo_virtual": "ECO-DEMO001",
+                "email": "juan@universidad.edu",
+                "puntos_totales": 150,
+                ...
+            }
+        }
+    
+    Response JSON (error):
+        {
+            "existe": false,
+            "mensaje": "Código no encontrado"
+        }
+    """
+    try:
+        from backend.models import Usuario
+        
+        # Buscar por codigo_virtual (campo existente)
+        codigo_upper = codigo.upper().strip()
+        usuario = Usuario.query.filter_by(codigo_virtual=codigo_upper).first()
+        
+        if usuario and usuario.activo:
+            nombre_completo = f"{usuario.nombre} {usuario.apellido}"
+            logger.info(f"Login por código: {nombre_completo} ({codigo_upper})")
+            return jsonify({
+                'existe': True,
+                'usuario': usuario.to_dict()
+            }), 200
+        else:
+            logger.warning(f"Código no encontrado: {codigo}")
+            return jsonify({
+                'existe': False,
+                'mensaje': 'Código no encontrado'
+            }), 404
+            
+    except Exception as e:
+        logger.error(f"Error en login_por_codigo: {e}")
+        return jsonify({
+            'error': f'Error en el servidor: {str(e)}'
+        }), 500

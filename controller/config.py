@@ -15,8 +15,8 @@ class ControllerConfig:
     """Configuración para el controlador de hardware"""
     
     # Comunicación Serial (Arduino)
-    SERIAL_PORT = os.getenv('SERIAL_PORT', 'COM3')
-    SERIAL_BAUDRATE = int(os.getenv('SERIAL_BAUDRATE', 9600))
+    SERIAL_PORT = os.getenv('SERIAL_PORT', 'COM5')
+    SERIAL_BAUDRATE = int(os.getenv('SERIAL_BAUDRATE', 115200))
     SERIAL_TIMEOUT = int(os.getenv('SERIAL_TIMEOUT', 1))
     
     # Cámara

@@ -9,7 +9,7 @@ sys.path.insert(0, str(ROOT_DIR))
 # Redirect stdout and stderr to file
 log_file = ROOT_DIR / "debug_output.txt"
 
-with open(log_file, 'w') as f:
+with open(log_file, 'w', encoding='utf-8') as f:
     try:
         f.write("Step 1: Importing config...\n")
         from backend.config import get_config
@@ -30,12 +30,19 @@ with open(log_file, 'w') as f:
             f.write("  Creating all tables...\n")
             db.create_all()
             f.write("  Tables created successfully!\n")
-
-        f.write("\n✅ All tests passed! Database is working correctly.\n")
+            
+            # Count existing data
+            from backend.models import Usuario, Transaccion
+            num_usuarios = Usuario.query.count()
+            num_transacciones = Transaccion.query.count()
+            
+            f.write(f"\n[OK] Database connected successfully!\n")
+            f.write(f"[OK] Usuarios in DB: {num_usuarios}\n")
+            f.write(f"[OK] Transacciones: {num_transacciones}\n")
         
     except Exception as e:
         import traceback
-        f.write(f"\n❌ ERROR: {type(e).__name__}: {e}\n\n")
+        f.write(f"\n[ERROR] {type(e).__name__}: {e}\n\n")
         f.write("Full traceback:\n")
         f.write(traceback.format_exc())
 

@@ -164,6 +164,7 @@ class ArduinoHandler:
     def run_loop(
         self,
         on_rfid: Callable[[str], None] = None,
+        on_login: Callable[[str], None] = None,  # NUEVO: Callback para login por keypad
         on_object_detected: Callable[[], None] = None,
         on_ready: Callable[[], None] = None
     ):
@@ -172,6 +173,7 @@ class ArduinoHandler:
         
         Args:
             on_rfid: Callback cuando se detecta una tarjeta RFID
+            on_login: Callback cuando se ingresa ID por keypad (NUEVO)
             on_object_detected: Callback cuando se detecta un objeto
             on_ready: Callback cuando Arduino está listo
         """
@@ -195,6 +197,17 @@ class ArduinoHandler:
                         uid = self.parse_rfid(message)
                         if uid and on_rfid:
                             on_rfid(uid)
+                    
+                    # NUEVO: Soporte para LOGIN por keypad
+                    elif message.startswith("LOGIN:"):
+                        user_id = message[6:].strip()
+                        if user_id and on_login:
+                            on_login(user_id)
+                    
+                    # Soporte adicional para STATUS:CHECK
+                    elif message.startswith("STATUS:"):
+                        if "CHECK" in message and on_object_detected:
+                            on_object_detected()
                 
                 time.sleep(0.05)  # Pequeña pausa para no saturar CPU
                 

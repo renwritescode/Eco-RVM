@@ -84,12 +84,14 @@ class EcoRVMController:
             return False
         logger.info("✅ Cámara abierta")
         
-        # Cargar modelo de IA
+        # Cargar modelo de IA (opcional para pruebas)
         logger.info(f"Cargando modelo de IA...")
         if not self.vision.load_model():
-            logger.error("❌ No se pudo cargar el modelo")
-            return False
-        logger.info("✅ Modelo de IA cargado")
+            logger.warning("⚠️  Modelo de IA no disponible")
+            logger.warning("   Sistema funcionará en MODO SIMULACIÓN")
+            logger.warning("   Todos los objetos serán ACEPTADOS automáticamente")
+        else:
+            logger.info("✅ Modelo de IA cargado")
         
         logger.info("=" * 60)
         logger.info("Sistema inicializado correctamente")
@@ -121,10 +123,16 @@ class EcoRVMController:
             self.current_user = user
             logger.info(f"Usuario identificado: {user['nombre_completo']}")
             logger.info(f"Puntos actuales: {user['puntos_totales']}")
-            # El Arduino mostrará el mensaje apropiado
+            
+            # ✅ FIX: Enviar confirmación al Arduino
+            nombre_corto = user['nombre'][:16]  # Máx 16 caracteres para LCD
+            self.arduino.send_command(f"USER:OK:{nombre_corto}")
         else:
             self.current_user = None
             logger.warning(f"Usuario no registrado: {uid}")
+            
+            # ✅ FIX: Enviar notificación al Arduino
+            self.arduino.send_command("USER:NEW")
     
     def handle_object_detected(self):
         """Manejar detección de objeto en el sensor"""
@@ -170,6 +178,33 @@ class EcoRVMController:
             logger.info("❌ Objeto rechazado")
             self.arduino.send_rejected()
     
+    def handle_login_keypad(self, codigo: str):
+        """
+        Manejar autenticación por keypad (ingreso de código virtual).
+        
+        Args:
+            codigo: Código virtual ingresado por keypad (ej: ECO-DEMO001)
+        """
+        logger.info(f"Login por keypad - Código: {codigo}")
+        
+        # Buscar usuario por codigo_virtual
+        user = self.api.check_user_by_code(codigo)
+        
+        if user:
+            self.current_user = user
+            logger.info(f"✅ Login exitoso: {user['nombre_completo']}")
+            logger.info(f"   Puntos actuales: {user['puntos_totales']}")
+            
+            # Enviar confirmación al Arduino
+            nombre_corto = user['nombre'][:16]  # Máx 16 caracteres para LCD
+            self.arduino.send_command(f"USER:OK:{nombre_corto}")
+        else:
+            self.current_user = None
+            logger.warning(f"❌ Código no válido: {codigo}")
+            
+            # Enviar error al Arduino
+            self.arduino.send_command("USER:ERROR")
+    
     def handle_ready(self):
         """Manejar señal de Arduino listo"""
         logger.debug("Arduino listo para siguiente operación")
@@ -186,6 +221,7 @@ class EcoRVMController:
         try:
             self.arduino.run_loop(
                 on_rfid=self.handle_rfid,
+                on_login=self.handle_login_keypad,  # NUEVO: Soporte para login por keypad
                 on_object_detected=self.handle_object_detected,
                 on_ready=self.handle_ready
             )

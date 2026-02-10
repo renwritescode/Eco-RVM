@@ -169,7 +169,7 @@
                                 </a>
                             </td>
                             <td>
-                                <small>{{ t.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</small>
+                                <small>{{ t.fecha_hora[:16].replace('T', ' ') if t.fecha_hora is string else t.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</small>
                             </td>
                             <td>
                                 <span class="badge bg-info">{{ t.tipo_objeto|capitalize }}</span>

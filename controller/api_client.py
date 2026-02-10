@@ -88,6 +88,32 @@ class APIClient:
         logger.warning(f"Usuario no encontrado: {uid}")
         return None
     
+    def check_user_by_code(self, codigo: str) -> Optional[Dict]:
+        """
+        Verificar usuario por código virtual (para autenticación por keypad).
+        Usa el campo codigo_virtual existente (ej: ECO-DEMO001, 33A40A).
+        
+        Args:
+            codigo: Código virtual del usuario
+        
+        Returns:
+            dict o None: Datos del usuario si existe
+        """
+        try:
+            # Llamar al endpoint con codigo_virtual
+            result = self._request('GET', f'/login_codigo/{codigo}')
+            
+            if result and result.get('existe'):
+                logger.info(f"Usuario verificado por código: {result['usuario']['nombre']}")
+                return result['usuario']
+            
+            logger.warning(f"Código no encontrado: {codigo}")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error verificando código: {codigo} - {e}")
+            return None
+    
     def add_points(
         self,
         uid: str,
